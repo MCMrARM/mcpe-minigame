@@ -2,7 +2,20 @@
 #include <minecraft/command/CommandMessage.h>
 #include <minecraft/command/CommandOutput.h>
 #include <minecraft/command/CommandParameterData.h>
+#include <minecraft/command/CommandOrigin.h>
+#include <minecraft/server/ServerInstance.h>
+#include <minecraft/game/Minecraft.h>
+#include <minecraft/level/LevelStorageSource.h>
+#include <minecraft/level/LevelStorage.h>
+#include <minecraft/resource/SkinPackKeyProvider.h>
 #include "statichook.h"
+#include "main.h"
+#include "MinigameDimension.h"
+
+ServerInstance* serverInstance;
+
+static SkinPackKeyProvider skinPackKeyProvider;
+
 
 class TestCommand : public Command {
 
@@ -19,6 +32,10 @@ public:
     void execute(CommandOrigin const& origin, CommandOutput& outp) override {
         outp.addMessage("§aThis absolutely §dworked! §e" + test.getMessage(origin));
         outp.success();
+
+        auto levelStorage = serverInstance->minecraft->getLevelSource().createLevelStorage("test2", std::string(), skinPackKeyProvider);
+        int dimenId = MinigameDimension::defineDimension(std::move(levelStorage));
+        MinigameDimension::sendPlayer((Player*) origin.getEntity(), dimenId);
     }
 
 };
@@ -26,4 +43,8 @@ public:
 THook(void, _ZN9OpCommand5setupER15CommandRegistry, CommandRegistry& registry) {
     TestCommand::setup(registry);
     original(registry);
+}
+
+extern "C" void mod_set_server(ServerInstance* instance) {
+    serverInstance = instance;
 }
