@@ -16,12 +16,17 @@ void Minigame::tick() {
     if (countdown > 0) {
         countdown--;
         if ((countdown % 20) == 0 && countdown > 0) {
-            std::stringstream ss;
+            /*std::stringstream ss;
             ss << "Game starting in " << (countdown / 20) << " seconds";
-            broadcast(ss.str());
+            broadcast(ss.str());*/
+            char buf[4096];
+            snprintf(buf, sizeof(buf), "Game starting in %i seconds", countdown / 20);
+            broadcast(buf);
         }
-        if (countdown == 0)
+        if (countdown == 0) {
+            broadcast("The game has started!");
             start();
+        }
     }
 }
 

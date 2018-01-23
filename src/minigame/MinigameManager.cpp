@@ -1,5 +1,8 @@
 #include "MinigameManager.h"
 
+#include <minecraft/level/Level.h>
+#include "../statichook.h"
+
 MinigameManager MinigameManager::instance;
 
 void MinigameManager::addGame(std::shared_ptr<Minigame> minigame) {
@@ -18,4 +21,14 @@ std::shared_ptr<Minigame> MinigameManager::getMinigame(std::string const& name) 
     if (minigames.count(name) == 0)
         return nullptr;
     return minigames.at(name);
+}
+
+void MinigameManager::tickMinigames() {
+    for (auto const& minigame : minigames)
+        minigame.second->tick();
+}
+
+TInstanceHook(void, _ZN5Level4tickEv, Level) {
+    original(this);
+    MinigameManager::instance.tickMinigames();
 }

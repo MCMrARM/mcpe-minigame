@@ -9,6 +9,8 @@
 #include <minecraft/level/LevelStorage.h>
 #include <minecraft/level/Level.h>
 #include <minecraft/resource/SkinPackKeyProvider.h>
+#include <sstream>
+#include <string>
 #include "statichook.h"
 #include "main.h"
 #include "minigame/Minigame.h"
