@@ -23,7 +23,7 @@ public:
 
     static std::unique_ptr<Dimension> createDimension(Level& level, int index);
 
-    static void sendPlayerToDimension(Player* player, int dimension);
+    static void sendPlayerToDimension(Player* player, int dimension, Vec3 targetPos);
 
     MinigameDimension(Level& level, LevelStorage* storage, DimensionId dimensionId, short maxHeight = 0x100);
 

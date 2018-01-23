@@ -12,9 +12,14 @@
 #include <minecraft/net/PacketSender.h>
 #include <minecraft/net/NetworkIdentifier.h>
 #include <minecraft/server/ServerNetworkHandler.h>
+#include <minecraft/level/ChangeDimensionRequest.h>
+#include <minecraft/level/DBChunkStorage.h>
+#include <minecraft/level/LevelChunk.h>
 #include <cstring>
 #include "../statichook.h"
+#include "../patchhook.h"
 #include "../util/PlayerHelper.h"
+#include "../util/Log.h"
 
 std::vector<MinigameDimension::DefinedDimension> MinigameDimension::dimensions;
 
@@ -47,9 +52,10 @@ std::unique_ptr<Dimension> MinigameDimension::createDimension(Level& level, int 
     return std::unique_ptr<Dimension>(new MinigameDimension(level, dimensions[index - 4].storage.get(), (DimensionId) index, (short) 0x100));
 }
 
-void MinigameDimension::sendPlayerToDimension(Player* player, int dimension) {
+void MinigameDimension::sendPlayerToDimension(Player* player, int dimension, Vec3 targetPos) {
     PlayerData& playerData = PlayerHelper::instance.getPlayerData(*player);
     playerData.tpTargetDimension = dimension;
+    playerData.tpTargetPos = targetPos;
 
     ChangeDimensionPacket pkDimen;
     pkDimen.dimension = 1;
@@ -103,7 +109,41 @@ TInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK18Pl
             return;
         int dimen = playerData.tpTargetDimension;
         playerData.tpTargetDimension = -1;
-        ((ServerPlayer*) foundPlayer)->changeDimension((DimensionId) dimen, false);
+
+        //((ServerPlayer*) foundPlayer)->changeDimension((DimensionId) dimen, false);
+        std::unique_ptr<ChangeDimensionRequest> request (new ChangeDimensionRequest());
+        request->unknown = 0;
+        request->sourceDimension = foundPlayer->getDimensionId();
+        request->targetDimension = (DimensionId) dimen;
+        request->position = playerData.tpTargetPos;
+        request->unknown2 = false; // that's the bool from Player::changeDimension
+        request->unknown3 = false; // ? has target pos maybe
+        request->unknown4 = 0;
+        foundPlayer->_usePortal(request->sourceDimension, request->targetDimension, 0x12C);
+        foundPlayer->getLevel()->requestPlayerChangeDimension(*foundPlayer, std::move(request));
+
     }
     original(this, nid, ap);
+}
+
+TClasslessInstanceHook(void, _ZN14DBChunkStorage13saveLiveChunkER10LevelChunk, LevelChunk*) {
+    Log::trace("MinigameDimension", "saveLiveChunk - stubbed");
+}
+
+TClasslessInstanceHook(bool, _ZN14DBChunkStorage9_hasChunkERK17DBChunkStorageKey, DBChunkStorageKey const& key) {
+    DBChunkStorageKey newKey = { key.x, key.z, (int) key.dimension >= 4 ? (DimensionId) 0 : key.dimension };
+    return original(this, newKey);
+}
+
+static DimensionId loadChunkFromDimensionIdHook(LevelChunk* self) {
+    DimensionId ret = self->getDimensionId();
+    if ((int) ret >= 4)
+        return (DimensionId) 0;
+    return ret;
+}
+
+__attribute__((constructor))
+static void _patchDimensionId() {
+    size_t patchOff = (size_t) dlsym(MinecraftHandle(), "_ZN14DBChunkStorage16_loadChunkFromDBER10LevelChunk") + 0x753 - 0x6F0;
+    patchCallInstruction((void*) patchOff, (void*) loadChunkFromDimensionIdHook, false);
 }

@@ -7,6 +7,7 @@
 #include <minecraft/game/Minecraft.h>
 #include <minecraft/level/LevelStorageSource.h>
 #include <minecraft/level/LevelStorage.h>
+#include <minecraft/level/Level.h>
 #include <minecraft/resource/SkinPackKeyProvider.h>
 #include "statichook.h"
 #include "main.h"
@@ -14,6 +15,7 @@
 #include "minigame/MinigameDimension.h"
 #include "minigame/MinigameCommands.h"
 #include "minigame/MinigameManager.h"
+#include "minigame/skywars/SkyWarsMinigame.h"
 
 ServerInstance* serverInstance;
 
@@ -34,21 +36,28 @@ public:
     }
 
     void execute(CommandOrigin const& origin, CommandOutput& outp) override {
-        outp.addMessage("§aThis absolutely §dworked! §e" + test.getMessage(origin));
+        std::string map = test.getMessage(origin);
+        if (map.empty())
+            map = "swtest";
+        outp.addMessage("§aThis absolutely §dworked! §e" + map);
         outp.success();
 
-        int dimenId = dimensions[test.getMessage(origin)];
+        int dimenId = dimensions[map];
         if (dimenId == 0) {
-            auto levelStorage = serverInstance->minecraft->getLevelSource().createLevelStorage(test.getMessage(origin), std::string(), skinPackKeyProvider);
+            auto levelStorage = serverInstance->minecraft->getLevelSource().createLevelStorage(map, std::string(), skinPackKeyProvider);
             dimenId = MinigameDimension::defineDimension(std::move(levelStorage));
-            dimensions[test.getMessage(origin)] = dimenId;
+            dimensions[map] = dimenId;
         }
+
+        Dimension* dimension = origin.getLevel()->createDimension((DimensionId) dimenId);
         MapConfig mapConfig;
         mapConfig.minPlayers = 2;
         mapConfig.tryGetMinPlayers = 4;
         mapConfig.maxPlayers = 8;
-        mapConfig.spawnPositions = {{87, 8, 8}, {108, 8, 8}};
-        MinigameDimension::sendPlayerToDimension((Player*) origin.getEntity(), dimenId);
+        mapConfig.spawnPositions = {{87, 10, 8}, {108, 10, 8}};
+        std::shared_ptr<SkyWarsMinigame> minigame(new SkyWarsMinigame(&MinigameManager::instance, "SW-1", dimension, mapConfig));
+        MinigameManager::instance.addGame(minigame);
+        minigame->addPlayer((Player*) origin.getEntity());
     }
 
 };

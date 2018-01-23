@@ -7,8 +7,9 @@
 #include <minecraft/level/Dimension.h>
 #include <minecraft/net/PacketSender.h>
 #include <minecraft/net/Packet.h>
-#include "MinigameDimension.h"
+#include "../util/PlayerHelper.h"
 #include "../util/Log.h"
+#include "MinigameDimension.h"
 
 void Minigame::tick() {
     if (countdown > 0) {
@@ -41,12 +42,21 @@ bool Minigame::addPlayer(Player* player) {
         player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), TextPacket::createRaw("Error: Game is full!"), player->getClientSubId());
         return false;
     }
+    PlayerData& playerData = PlayerHelper::instance.getPlayerData(*player);
+    if (playerData.currentMinigame != nullptr) {
+        Log::info("Minigame", "[%s] Player can't join - already in another game");
+        player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), TextPacket::createRaw("Error: You are already in another game!"), player->getClientSubId());
+        return false;
+    }
+    playerData.currentMinigame = this;
+
     auto pos = playerSpawnPos[player] = availableSpawnPos[availableSpawnPos.size() - 1];
     availableSpawnPos.pop_back();
 
     broadcast("Join: " + player->getFormattedNameTag());
     players.push_back(player);
-    // MinigameDimension::sendPlayerToDimension(player, (int) dimension->id, {pos.x + 0.5f, pos.y, pos.z + 0.5f});
+
+    MinigameDimension::sendPlayerToDimension(player, (int) dimension->id, {pos.x + 0.5f, pos.y, pos.z + 0.5f});
     return true;
 }
 

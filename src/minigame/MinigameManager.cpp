@@ -3,7 +3,7 @@
 MinigameManager MinigameManager::instance;
 
 void MinigameManager::addGame(std::shared_ptr<Minigame> minigame) {
-    if (minigames.count(minigame->getName()) == 0)
+    if (minigames.count(minigame->getName()) > 0)
         throw std::runtime_error("A minigame with this name already exists");
     minigames[minigame->getName()] = minigame;
 }
