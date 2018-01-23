@@ -44,9 +44,7 @@ public:
     void startCountdown(int countdown = TICKS_INITIAL_COUNTDOWN) { this->countdown = countdown; }
     int getCountdown() const { return countdown; }
 
-    virtual void onStarted() {
-        broadcast("Game has started!");
-    }
+    virtual void onStarted();
 
     virtual void tick();
 

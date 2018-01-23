@@ -10,6 +10,7 @@
 #include "../util/PlayerHelper.h"
 #include "../util/Log.h"
 #include "MinigameDimension.h"
+#include "../util/PlayerPosLimitHelper.h"
 
 void Minigame::tick() {
     if (countdown > 0) {
@@ -29,6 +30,13 @@ void Minigame::start() {
         return;
     started = true;
     onStarted();
+}
+
+void Minigame::onStarted() {
+    for (Player* player : players) {
+        PlayerData& playerData = PlayerHelper::instance.getPlayerData(*player);
+        PlayerPosLimitHelper::clearPlayerLimit(playerData);
+    }
 }
 
 bool Minigame::addPlayer(Player* player) {
@@ -57,6 +65,9 @@ bool Minigame::addPlayer(Player* player) {
     players.push_back(player);
 
     MinigameDimension::sendPlayerToDimension(player, (int) dimension->id, {pos.x + 0.5f, pos.y, pos.z + 0.5f});
+    PlayerPosLimitHelper::setPlayerLimitBox(playerData, AABB({pos.x, pos.y - 2.f, pos.z},
+                                                             {pos.x + 1.f, pos.y + 2.f, pos.z + 1.f}),
+                                            [pos](Vec3 const&) { return Vec3 {pos.x + 0.5f, pos.y, pos.z + 0.5f}; });
     return true;
 }
 
