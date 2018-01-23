@@ -13,9 +13,9 @@
 #include "main.h"
 #include "minigame/Minigame.h"
 #include "minigame/MinigameDimension.h"
-#include "minigame/MinigameCommands.h"
 #include "minigame/MinigameManager.h"
 #include "minigame/skywars/SkyWarsMinigame.h"
+#include "minigame/commands/ForceStartMinigameCommand.h"
 
 ServerInstance* serverInstance;
 
