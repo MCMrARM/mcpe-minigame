@@ -17,4 +17,6 @@ public:
 
     std::shared_ptr<Minigame> getMinigame(std::string const& name);
 
+    void tickMinigames();
+
 };

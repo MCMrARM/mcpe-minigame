@@ -16,6 +16,7 @@
 #include "minigame/MinigameManager.h"
 #include "minigame/skywars/SkyWarsMinigame.h"
 #include "minigame/commands/ForceStartMinigameCommand.h"
+#include "minigame/commands/JoinMinigameCommand.h"
 
 ServerInstance* serverInstance;
 
@@ -65,6 +66,7 @@ public:
 THook(void, _ZN9OpCommand5setupER15CommandRegistry, CommandRegistry& registry) {
     TestCommand::setup(registry);
     ForceStartMinigameCommand::setup(registry);
+    JoinMinigameCommand::setup(registry);
     original(registry);
 }
 
