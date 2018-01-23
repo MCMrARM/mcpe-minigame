@@ -16,17 +16,18 @@ private:
     };
     static std::vector<DefinedDimension> dimensions;
 
-public:
-    static std::map<Player*, int> sendPlayerToDimension;
+    LevelStorage* storage;
 
+public:
     static int defineDimension(std::unique_ptr<LevelStorage> storage);
 
     static std::unique_ptr<Dimension> createDimension(Level& level, int index);
 
-    static void sendPlayer(Player* player, int dimension);
+    static void sendPlayerToDimension(Player* player, int dimension);
 
-    MinigameDimension(Level& level, DimensionId dimensionId, short maxHeight = 0x100);
+    MinigameDimension(Level& level, LevelStorage* storage, DimensionId dimensionId, short maxHeight = 0x100);
 
+    virtual void init();
     virtual std::string getName() const {
         return "MinigameDimension";
     }

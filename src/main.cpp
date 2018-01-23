@@ -10,12 +10,16 @@
 #include <minecraft/resource/SkinPackKeyProvider.h>
 #include "statichook.h"
 #include "main.h"
-#include "MinigameDimension.h"
+#include "minigame/Minigame.h"
+#include "minigame/MinigameDimension.h"
+#include "minigame/MinigameCommands.h"
+#include "minigame/MinigameManager.h"
 
 ServerInstance* serverInstance;
 
 static SkinPackKeyProvider skinPackKeyProvider;
 
+static std::map<std::string, int> dimensions;
 
 class TestCommand : public Command {
 
@@ -33,15 +37,25 @@ public:
         outp.addMessage("§aThis absolutely §dworked! §e" + test.getMessage(origin));
         outp.success();
 
-        auto levelStorage = serverInstance->minecraft->getLevelSource().createLevelStorage("test2", std::string(), skinPackKeyProvider);
-        int dimenId = MinigameDimension::defineDimension(std::move(levelStorage));
-        MinigameDimension::sendPlayer((Player*) origin.getEntity(), dimenId);
+        int dimenId = dimensions[test.getMessage(origin)];
+        if (dimenId == 0) {
+            auto levelStorage = serverInstance->minecraft->getLevelSource().createLevelStorage(test.getMessage(origin), std::string(), skinPackKeyProvider);
+            dimenId = MinigameDimension::defineDimension(std::move(levelStorage));
+            dimensions[test.getMessage(origin)] = dimenId;
+        }
+        MapConfig mapConfig;
+        mapConfig.minPlayers = 2;
+        mapConfig.tryGetMinPlayers = 4;
+        mapConfig.maxPlayers = 8;
+        mapConfig.spawnPositions = {{87, 8, 8}, {108, 8, 8}};
+        MinigameDimension::sendPlayerToDimension((Player*) origin.getEntity(), dimenId);
     }
 
 };
 
 THook(void, _ZN9OpCommand5setupER15CommandRegistry, CommandRegistry& registry) {
     TestCommand::setup(registry);
+    ForceStartMinigameCommand::setup(registry);
     original(registry);
 }
 

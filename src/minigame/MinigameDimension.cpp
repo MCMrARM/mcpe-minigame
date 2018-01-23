@@ -3,19 +3,23 @@
 #include <minecraft/level/BiomeSource.h>
 #include <minecraft/level/LevelStorage.h>
 #include <minecraft/level/Level.h>
+#include <minecraft/level/LevelData.h>
+#include <minecraft/level/MainChunkSource.h>
+#include <minecraft/level/BlockSource.h>
+#include <minecraft/level/RuntimeLightingManager.h>
 #include <minecraft/entity/Player.h>
 #include <minecraft/net/Packet.h>
 #include <minecraft/net/PacketSender.h>
 #include <minecraft/net/NetworkIdentifier.h>
 #include <minecraft/server/ServerNetworkHandler.h>
 #include <cstring>
-#include "statichook.h"
+#include "../statichook.h"
+#include "../util/PlayerHelper.h"
 
 std::vector<MinigameDimension::DefinedDimension> MinigameDimension::dimensions;
-std::map<Player*, int> MinigameDimension::sendPlayerToDimension;
 
-MinigameDimension::MinigameDimension(Level& level, DimensionId dimensionId, short maxHeight) :
-        Dimension(level, (DimensionId) 3, maxHeight) {
+MinigameDimension::MinigameDimension(Level& level, LevelStorage* storage, DimensionId dimensionId, short maxHeight) :
+        Dimension(level, (DimensionId) 3, maxHeight), storage(storage) {
     id = dimensionId;
     dimensionName = "MinigameDimension";
     maxBrightness = 0xff;
@@ -29,12 +33,23 @@ int MinigameDimension::defineDimension(std::unique_ptr<LevelStorage> storage) {
     return dimensions.size() - 1 + 4;
 }
 
-std::unique_ptr<Dimension> MinigameDimension::createDimension(Level& level, int index) {
-    return std::unique_ptr<Dimension>(new MinigameDimension(level, (DimensionId) index, (short) 0x100));
+void MinigameDimension::init() {
+    std::unique_ptr<ChunkSource> chunkSource = _createGenerator((GeneratorType) 1);
+    chunkSource = storage->createChunkStorage(std::move(chunkSource), level->getLevelData()->getStorageVersion());
+    //chunkSource = level->getLevelStorage()->createChunkStorage(std::move(chunkSource), level->getLevelData()->getStorageVersion());
+    chunkSource = std::unique_ptr<ChunkSource>(new MainChunkSource(std::move(chunkSource)));
+    this->chunkSource = std::move(chunkSource);
+    this->blockSource = std::unique_ptr<BlockSource>(new BlockSource(*level, *this, *this->chunkSource, false, true));
+    this->runtimeLightingManager = std::unique_ptr<RuntimeLightingManager>(new RuntimeLightingManager(*this));
 }
 
-void MinigameDimension::sendPlayer(Player* player, int dimension) {
-    sendPlayerToDimension[player] = dimension;
+std::unique_ptr<Dimension> MinigameDimension::createDimension(Level& level, int index) {
+    return std::unique_ptr<Dimension>(new MinigameDimension(level, dimensions[index - 4].storage.get(), (DimensionId) index, (short) 0x100));
+}
+
+void MinigameDimension::sendPlayerToDimension(Player* player, int dimension) {
+    PlayerData& playerData = PlayerHelper::instance.getPlayerData(*player);
+    playerData.tpTargetDimension = dimension;
 
     ChangeDimensionPacket pkDimen;
     pkDimen.dimension = 1;
@@ -83,11 +98,12 @@ TInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK18Pl
         }
         if (foundPlayer == nullptr)
             return;
-        if (MinigameDimension::sendPlayerToDimension.count(foundPlayer) <= 0)
+        PlayerData& playerData = PlayerHelper::instance.getPlayerData(*foundPlayer);
+        if (playerData.tpTargetDimension == -1)
             return;
-        DimensionId dimen = (DimensionId) MinigameDimension::sendPlayerToDimension.at(foundPlayer);
-        MinigameDimension::sendPlayerToDimension.erase(foundPlayer);
-        ((ServerPlayer*) foundPlayer)->changeDimension(dimen, false);
+        int dimen = playerData.tpTargetDimension;
+        playerData.tpTargetDimension = -1;
+        ((ServerPlayer*) foundPlayer)->changeDimension((DimensionId) dimen, false);
     }
     original(this, nid, ap);
 }
