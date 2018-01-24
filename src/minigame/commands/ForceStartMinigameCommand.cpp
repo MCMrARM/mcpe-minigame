@@ -20,7 +20,7 @@ void ForceStartMinigameCommand::execute(CommandOrigin const& origin, CommandOutp
         return;
     minigame->broadcast("The game was started forcibly");
     if (minigame->getCountdown() != -1)
-        minigame->startCountdown(Minigame::TICKS_ENOUGH_PLAYERS_COUNTDOWN);
+        minigame->startCountdown(Minigame::TICKS_FULL_PLAYERS_COUNTDOWN);
     else
         minigame->startCountdown();
     outp.success();

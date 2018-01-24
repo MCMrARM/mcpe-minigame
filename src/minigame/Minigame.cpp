@@ -73,6 +73,11 @@ bool Minigame::addPlayer(Player* player) {
     PlayerPosLimitHelper::setPlayerLimitBox(playerData, AABB({pos.x, pos.y - 2.f, pos.z},
                                                              {pos.x + 1.f, pos.y + 2.f, pos.z + 1.f}),
                                             [pos](Vec3 const&) { return Vec3 {pos.x + 0.5f, pos.y, pos.z + 0.5f}; });
+
+    if (players.size() >= mapConfig.tryGetMinPlayers && (countdown == -1 || countdown > TICKS_ENOUGH_PLAYERS_COUNTDOWN))
+        countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
+    if (players.size() >= mapConfig.maxPlayers && (countdown == -1 || countdown > TICKS_FULL_PLAYERS_COUNTDOWN))
+        countdown = TICKS_FULL_PLAYERS_COUNTDOWN;
     return true;
 }
 
@@ -83,6 +88,12 @@ void Minigame::removePlayer(Player* player) {
     }
     broadcast("Quit: " + player->getFormattedNameTag());
     players.erase(std::remove(players.begin(), players.end(), player), players.end());
+    if (players.size() == mapConfig.maxPlayers - 1 && countdown != -1 && countdown < TICKS_FULL_PLAYERS_COUNTDOWN)
+        countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
+    if (players.size() == mapConfig.tryGetMinPlayers - 1 && countdown != -1 && countdown < TICKS_ENOUGH_PLAYERS_COUNTDOWN)
+        countdown = TICKS_INITIAL_COUNTDOWN;
+    if (players.size() < mapConfig.minPlayers && countdown != -1)
+        countdown = -1;
 }
 
 void Minigame::broadcast(Packet const& packet) {

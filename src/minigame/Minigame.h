@@ -31,6 +31,7 @@ protected:
 public:
     static const int TICKS_INITIAL_COUNTDOWN = 20 * 60;
     static const int TICKS_ENOUGH_PLAYERS_COUNTDOWN = 20 * 15;
+    static const int TICKS_FULL_PLAYERS_COUNTDOWN = 20 * 5;
 
     Minigame(MinigameManager* mgr, std::string name, Dimension* dimension, MapConfig mapConfig) :
             name(std::move(name)), dimension(dimension), manager(mgr) {

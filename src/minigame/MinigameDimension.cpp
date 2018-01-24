@@ -97,7 +97,7 @@ TInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK18Pl
     if (ap.action == 14) {
         Player* foundPlayer = nullptr;
         for (auto const& player : ServerNetworkHandler::level->getUsers()) {
-            if (player->getClientId().equalsTypeData(nid)) {
+            if (player->getClientId().equalsTypeData(nid) && player->getClientSubId() == ap.playerSubIndex) {
                 foundPlayer = player.get();
                 break;
             }
