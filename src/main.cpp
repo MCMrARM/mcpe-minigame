@@ -23,6 +23,8 @@
 #include "minigame/skywars/SkyWarsMinigame.h"
 #include "minigame/commands/ForceStartMinigameCommand.h"
 #include "minigame/commands/JoinMinigameCommand.h"
+#include "minigame/commands/ReturnToLobbyCommand.h"
+#include "lobby/LobbyManager.h"
 #include "util/Log.h"
 
 ServerInstance* serverInstance;
@@ -86,9 +88,11 @@ THook(void, _ZN9OpCommand5setupER15CommandRegistry, CommandRegistry& registry) {
     TestCommand::setup(registry);
     ForceStartMinigameCommand::setup(registry);
     JoinMinigameCommand::setup(registry);
+    ReturnToLobbyCommand::setup(registry);
     original(registry);
 }
 
 extern "C" void mod_set_server(ServerInstance* instance) {
     serverInstance = instance;
+    LobbyManager::instance.setDimension(instance->minecraft->getLevel()->createDimension((DimensionId) 0));
 }

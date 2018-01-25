@@ -77,6 +77,7 @@ bool Minigame::addPlayer(Player* player) {
                                                              {pos.x + 1.f, pos.y + 2.f, pos.z + 1.f}),
                                             [pos](Vec3 const&) { return Vec3 {pos.x + 0.5f, pos.y, pos.z + 0.5f}; });
 
+    player->abilities = Abilities(); // reset the abilities
     player->abilities.setPlayerPermissions(PlayerPermissionLevel::VIEWER);
     player->setPermissions(player->getCommandPermissionLevel()); // send the abilities to the client
 

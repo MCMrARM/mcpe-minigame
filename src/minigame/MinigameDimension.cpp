@@ -59,7 +59,7 @@ void MinigameDimension::sendPlayerToDimension(Player* player, int dimension, Vec
 
     ChangeDimensionPacket pkDimen;
     pkDimen.dimension = 1;
-    pkDimen.pos = {1, 1, 1};
+    pkDimen.pos = Vec3(1, 1, 1);
     pkDimen.b = false;
     player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), pkDimen, player->getClientSubId());
 
