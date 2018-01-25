@@ -126,8 +126,9 @@ TInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK18Pl
     original(this, nid, ap);
 }
 
-TClasslessInstanceHook(void, _ZN14DBChunkStorage13saveLiveChunkER10LevelChunk, LevelChunk*) {
+TClasslessInstanceHook(void, _ZN14DBChunkStorage13saveLiveChunkER10LevelChunk, LevelChunk* chunk) {
     Log::trace("MinigameDimension", "saveLiveChunk - stubbed");
+    chunk->setSaved();
 }
 
 TClasslessInstanceHook(bool, _ZN14DBChunkStorage9_hasChunkERK17DBChunkStorageKey, DBChunkStorageKey const& key) {

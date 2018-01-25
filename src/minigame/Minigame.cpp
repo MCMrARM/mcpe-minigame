@@ -41,6 +41,9 @@ void Minigame::onStarted() {
     for (Player* player : players) {
         PlayerData& playerData = PlayerHelper::instance.getPlayerData(*player);
         PlayerPosLimitHelper::clearPlayerLimit(playerData);
+
+        player->abilities.setPlayerPermissions(PlayerPermissionLevel::MEMBER);
+        player->setPermissions(player->getCommandPermissionLevel()); // send the abilities to the client
     }
 }
 
@@ -73,6 +76,9 @@ bool Minigame::addPlayer(Player* player) {
     PlayerPosLimitHelper::setPlayerLimitBox(playerData, AABB({pos.x, pos.y - 2.f, pos.z},
                                                              {pos.x + 1.f, pos.y + 2.f, pos.z + 1.f}),
                                             [pos](Vec3 const&) { return Vec3 {pos.x + 0.5f, pos.y, pos.z + 0.5f}; });
+
+    player->abilities.setPlayerPermissions(PlayerPermissionLevel::VIEWER);
+    player->setPermissions(player->getCommandPermissionLevel()); // send the abilities to the client
 
     if (players.size() >= mapConfig.tryGetMinPlayers && (countdown == -1 || countdown > TICKS_ENOUGH_PLAYERS_COUNTDOWN))
         countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;

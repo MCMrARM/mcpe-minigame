@@ -5,9 +5,13 @@
 #include <minecraft/command/CommandOrigin.h>
 #include <minecraft/server/ServerInstance.h>
 #include <minecraft/game/Minecraft.h>
+#include <minecraft/game/GameMode.h>
 #include <minecraft/level/LevelStorageSource.h>
 #include <minecraft/level/LevelStorage.h>
 #include <minecraft/level/Level.h>
+#include <minecraft/level/BlockSource.h>
+#include <minecraft/entity/Player.h>
+#include <minecraft/entity/PlayerInventoryProxy.h>
 #include <minecraft/resource/SkinPackKeyProvider.h>
 #include <sstream>
 #include <string>
@@ -19,6 +23,7 @@
 #include "minigame/skywars/SkyWarsMinigame.h"
 #include "minigame/commands/ForceStartMinigameCommand.h"
 #include "minigame/commands/JoinMinigameCommand.h"
+#include "util/Log.h"
 
 ServerInstance* serverInstance;
 
@@ -64,6 +69,18 @@ public:
     }
 
 };
+
+THook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK23AdventureSettingsPacket) {
+}
+
+TInstanceHook(bool, _ZN8GameMode12destroyBlockERK8BlockPosa, GameMode, BlockPos const& bp, char c) {
+    if (!player->getRegion()->checkBlockDestroyPermissions(*player, bp, *player->getSupplies().getSelectedItem(), false)) {
+        Log::trace("GameMode", "destroyBlock: cheating attempt by %s", player->getNameTag().c_str());
+        return false;
+    }
+    return original(this, bp, c);
+
+}
 
 THook(void, _ZN9OpCommand5setupER15CommandRegistry, CommandRegistry& registry) {
     TestCommand::setup(registry);
