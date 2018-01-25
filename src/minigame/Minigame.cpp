@@ -69,7 +69,7 @@ bool Minigame::addPlayer(Player* player) {
     auto pos = playerSpawnPos[player] = availableSpawnPos[availableSpawnPos.size() - 1];
     availableSpawnPos.pop_back();
 
-    broadcast("Join: " + player->getFormattedNameTag());
+    broadcast("Join: " + player->getNameTag());
     players.push_back(player);
 
     MinigameDimension::sendPlayerToDimension(player, (int) dimension->id, {pos.x + 0.5f, pos.y, pos.z + 0.5f});
@@ -93,7 +93,7 @@ void Minigame::removePlayer(Player* player) {
         availableSpawnPos.push_back(playerSpawnPos.at(player));
         playerSpawnPos.erase(player);
     }
-    broadcast("Quit: " + player->getFormattedNameTag());
+    broadcast("Quit: " + player->getNameTag());
     players.erase(std::remove(players.begin(), players.end(), player), players.end());
     if (players.size() == mapConfig.maxPlayers - 1 && countdown != -1 && countdown < TICKS_FULL_PLAYERS_COUNTDOWN)
         countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
