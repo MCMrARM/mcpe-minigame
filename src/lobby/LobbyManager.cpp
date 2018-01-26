@@ -1,8 +1,10 @@
 #include "LobbyManager.h"
 
 #include <minecraft/entity/Player.h>
+#include <minecraft/level/BlockPos.h>
 #include <minecraft/level/Level.h>
 #include <minecraft/level/LevelData.h>
+#include <minecraft/level/BlockSource.h>
 #include "../minigame/MinigameDimension.h"
 #include "../statichook.h"
 
@@ -17,14 +19,15 @@ void LobbyManager::setDimension(Dimension* dimension) {
 }
 
 void LobbyManager::sendPlayerToLobby(Player& player) {
-    MinigameDimension::sendPlayerToDimension(&player, (int) dimension->id, player.getLevel()->getSharedSpawnPos());
+    auto pos = player.getLevel()->getSharedSpawnPos();
+    MinigameDimension::sendPlayerToDimension(&player, (int) dimension->id, {pos.x, pos.y, pos.z});
     onPlayerArrivedInLobby(player);
 }
 
 void LobbyManager::onPlayerArrivedInLobby(Player& player) {
     auto cmdPermissionLevel = player.getCommandPermissionLevel();
-    player.setPlayerGameType(dimension->level->getLevelData()->getGameType());
     player.abilities = dimension->level->getDefaultAbilities();
+    player.setPlayerGameType(dimension->level->getLevelData()->getGameType());
     player.abilities.setAbility(Abilities::MAYFLY, false);
     player.setPermissions(cmdPermissionLevel); // revert the cmd permission level & send the abilities to the client
 }

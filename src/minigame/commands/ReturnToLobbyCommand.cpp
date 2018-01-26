@@ -4,6 +4,7 @@
 #include <minecraft/command/CommandParameterData.h>
 #include "../../lobby/LobbyManager.h"
 #include "../Minigame.h"
+#include "../../util/PlayerPosLimitHelper.h"
 
 void ReturnToLobbyCommand::setup(CommandRegistry& registry) {
     registry.registerCommand("lobby", "Returns to the lobby", (CommandPermissionLevel) 0, (CommandFlag) 0,
@@ -20,5 +21,6 @@ void ReturnToLobbyCommand::execute(CommandOrigin const& origin, CommandOutput& o
         data.currentMinigame->removePlayer(&player);
         data.currentMinigame = nullptr;
     }
+    PlayerPosLimitHelper::clearPlayerLimit(data);
     LobbyManager::instance.sendPlayerToLobby(player);
 }

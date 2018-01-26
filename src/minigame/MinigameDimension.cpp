@@ -20,6 +20,8 @@
 #include "../patchhook.h"
 #include "../util/PlayerHelper.h"
 #include "../util/Log.h"
+#include "FakeNetherDimension.h"
+#include "EmptyWorldGenerator.h"
 
 std::vector<MinigameDimension::DefinedDimension> MinigameDimension::dimensions;
 
@@ -39,7 +41,9 @@ int MinigameDimension::defineDimension(std::unique_ptr<LevelStorage> storage) {
 }
 
 void MinigameDimension::init() {
-    std::unique_ptr<ChunkSource> chunkSource = _createGenerator((GeneratorType) 1);
+    EmptyWorldGenerator* generator = new EmptyWorldGenerator(this);
+    this->generator = generator;
+    std::unique_ptr<ChunkSource> chunkSource (generator);
     chunkSource = storage->createChunkStorage(std::move(chunkSource), level->getLevelData()->getStorageVersion());
     //chunkSource = level->getLevelStorage()->createChunkStorage(std::move(chunkSource), level->getLevelData()->getStorageVersion());
     chunkSource = std::unique_ptr<ChunkSource>(new MainChunkSource(std::move(chunkSource)));
@@ -56,8 +60,7 @@ void MinigameDimension::sendPlayerToDimension(Player* player, int dimension, Vec
     PlayerData& playerData = PlayerHelper::instance.getPlayerData(*player);
     playerData.tpTargetDimension = dimension;
     playerData.tpTargetPos = targetPos;
-
-    ChangeDimensionPacket pkDimen;
+    /*ChangeDimensionPacket pkDimen;
     pkDimen.dimension = 1;
     pkDimen.pos = Vec3(1, 1, 1);
     pkDimen.b = false;
@@ -77,11 +80,14 @@ void MinigameDimension::sendPlayerToDimension(Player* player, int dimension, Vec
     }
     PlayStatusPacket pkStatus;
     pkStatus.status = 3;
-    player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), pkStatus, player->getClientSubId());
+    player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), pkStatus, player->getClientSubId());*/
+    player->changeDimension((DimensionId) 1, false);
 }
 
 THook(std::unique_ptr<Dimension>, _ZN9Dimension9createNewE11DimensionIdR5Level, DimensionId d, Level& l) {
     printf("CreateDimension %i\n", d);
+    if ((int) d == 1)
+        return std::unique_ptr<Dimension>(new FakeNetherDimension(l));
     if ((int) d >= 4)
         return MinigameDimension::createDimension(l, (int) d);
     return original((DimensionId) 0, l);
@@ -94,6 +100,7 @@ TInstanceHook(void, _ZNK21ChangeDimensionPacket5writeER12BinaryStream, ChangeDim
 }
 
 TInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK18PlayerActionPacket, ServerNetworkHandler, NetworkIdentifier const& nid, PlayerActionPacket const& ap) {
+    original(this, nid, ap);
     if (ap.action == 14) {
         Player* foundPlayer = nullptr;
         for (auto const& player : ServerNetworkHandler::level->getUsers()) {
@@ -104,6 +111,7 @@ TInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK18Pl
         }
         if (foundPlayer == nullptr)
             return;
+        printf("And there we go!\n");
         PlayerData& playerData = PlayerHelper::instance.getPlayerData(*foundPlayer);
         if (playerData.tpTargetDimension == -1)
             return;
@@ -123,7 +131,6 @@ TInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK18Pl
         foundPlayer->getLevel()->requestPlayerChangeDimension(*foundPlayer, std::move(request));
 
     }
-    original(this, nid, ap);
 }
 
 TClasslessInstanceHook(void, _ZN14DBChunkStorage13saveLiveChunkER10LevelChunk, LevelChunk* chunk) {

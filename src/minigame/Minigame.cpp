@@ -7,6 +7,7 @@
 #include <minecraft/level/Dimension.h>
 #include <minecraft/net/PacketSender.h>
 #include <minecraft/net/Packet.h>
+#include <minecraft/game/GameType.h>
 #include "../util/PlayerHelper.h"
 #include "../util/Log.h"
 #include "MinigameDimension.h"
@@ -79,7 +80,7 @@ bool Minigame::addPlayer(Player* player) {
 
     player->abilities = Abilities(); // reset the abilities
     player->abilities.setPlayerPermissions(PlayerPermissionLevel::VIEWER);
-    player->setPermissions(player->getCommandPermissionLevel()); // send the abilities to the client
+    player->setPlayerGameType(GameType::SURVIVAL);
 
     if (players.size() >= mapConfig.tryGetMinPlayers && (countdown == -1 || countdown > TICKS_ENOUGH_PLAYERS_COUNTDOWN))
         countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
