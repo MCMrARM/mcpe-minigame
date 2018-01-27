@@ -44,6 +44,7 @@ void Minigame::onStarted() {
         PlayerPosLimitHelper::clearPlayerLimit(playerData);
 
         player->abilities.setPlayerPermissions(PlayerPermissionLevel::MEMBER);
+        player->abilities.setAbility(Abilities::INVULNERABLE, false);
         player->setPermissions(player->getCommandPermissionLevel()); // send the abilities to the client
     }
 }
@@ -81,8 +82,9 @@ bool Minigame::addPlayer(Player* player) {
     auto permissionLevel = player->getCommandPermissionLevel();
     player->abilities = Abilities(); // reset the abilities
     player->abilities.setPlayerPermissions(PlayerPermissionLevel::VIEWER);
-    player->setPermissions(permissionLevel);
     player->setPlayerGameType(GameType::SURVIVAL);
+    player->abilities.setAbility(Abilities::INVULNERABLE, true);
+    player->setPermissions(permissionLevel);
 
     if (players.size() >= mapConfig.tryGetMinPlayers && (countdown == -1 || countdown > TICKS_ENOUGH_PLAYERS_COUNTDOWN))
         countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
