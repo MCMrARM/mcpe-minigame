@@ -451,6 +451,117 @@
           ]
         }
       ]
+    },
+
+    /* Armor */
+    {
+      "rolls": { "min": 0, "max": 2 },
+      "entries": [
+        {
+          "type": "item",
+          "name": "minecraft:leather_helmet",
+          "weight": 100
+        },
+        {
+          "type": "item",
+          "name": "minecraft:leather_chestplate",
+          "weight": 70
+        },
+        {
+          "type": "item",
+          "name": "minecraft:leather_leggings",
+          "weight": 80
+        },
+        {
+          "type": "item",
+          "name": "minecraft:leather_boots",
+          "weight": 100
+        },
+
+        {
+          "type": "item",
+          "name": "minecraft:golden_helmet",
+          "weight": 80
+        },
+        {
+          "type": "item",
+          "name": "minecraft:golden_chestplate",
+          "weight": 60
+        },
+        {
+          "type": "item",
+          "name": "minecraft:golden_leggings",
+          "weight": 70
+        },
+        {
+          "type": "item",
+          "name": "minecraft:golden_boots",
+          "weight": 80
+        },
+
+        {
+          "type": "item",
+          "name": "minecraft:chainmail_helmet",
+          "weight": 80
+        },
+        {
+          "type": "item",
+          "name": "minecraft:chainmail_chestplate",
+          "weight": 60
+        },
+        {
+          "type": "item",
+          "name": "minecraft:chainmail_leggings",
+          "weight": 70
+        },
+        {
+          "type": "item",
+          "name": "minecraft:chainmail_boots",
+          "weight": 80
+        },
+
+        {
+          "type": "item",
+          "name": "minecraft:iron_helmet",
+          "weight": 50
+        },
+        {
+          "type": "item",
+          "name": "minecraft:iron_chestplate",
+          "weight": 30
+        },
+        {
+          "type": "item",
+          "name": "minecraft:iron_leggings",
+          "weight": 40
+        },
+        {
+          "type": "item",
+          "name": "minecraft:iron_boots",
+          "weight": 50
+        },
+
+        {
+          "type": "item",
+          "name": "minecraft:diamond_helmet",
+          "weight": 30
+        },
+        {
+          "type": "item",
+          "name": "minecraft:diamond_chestplate",
+          "weight": 10
+        },
+        {
+          "type": "item",
+          "name": "minecraft:diamond_leggings",
+          "weight": 20
+        },
+        {
+          "type": "item",
+          "name": "minecraft:diamond_boots",
+          "weight": 30
+        }
+      ]
     }
   ]
 }
