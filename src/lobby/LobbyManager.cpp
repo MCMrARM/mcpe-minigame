@@ -20,7 +20,7 @@ void LobbyManager::setDimension(Dimension* dimension) {
 
 void LobbyManager::sendPlayerToLobby(Player& player) {
     auto pos = player.getLevel()->getSharedSpawnPos();
-    MinigameDimension::sendPlayerToDimension(&player, (int) dimension->id, {pos.x, pos.y, pos.z});
+    MinigameDimension::sendPlayerToDimension(&player, (int) dimension->id, {pos.x, pos.y + 2.f, pos.z});
     onPlayerArrivedInLobby(player);
 }
 
