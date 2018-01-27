@@ -78,8 +78,10 @@ bool Minigame::addPlayer(Player* player) {
                                                              {pos.x + 1.f, pos.y + 4.f, pos.z + 1.f}),
                                             [pos](Vec3 const&) { return Vec3 {pos.x + 0.5f, pos.y + 2.f, pos.z + 0.5f}; });
 
+    auto permissionLevel = player->getCommandPermissionLevel();
     player->abilities = Abilities(); // reset the abilities
     player->abilities.setPlayerPermissions(PlayerPermissionLevel::VIEWER);
+    player->setPermissions(permissionLevel);
     player->setPlayerGameType(GameType::SURVIVAL);
 
     if (players.size() >= mapConfig.tryGetMinPlayers && (countdown == -1 || countdown > TICKS_ENOUGH_PLAYERS_COUNTDOWN))
