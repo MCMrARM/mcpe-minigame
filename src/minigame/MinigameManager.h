@@ -3,8 +3,9 @@
 #include <unordered_map>
 #include <memory>
 #include "Minigame.h"
+#include "../util/PlayerHelper.h"
 
-class MinigameManager {
+class MinigameManager : public PlayerEventListener {
 
 private:
     std::unordered_map<std::string, std::shared_ptr<Minigame>> minigames;
@@ -18,5 +19,7 @@ public:
     std::shared_ptr<Minigame> getMinigame(std::string const& name);
 
     void tickMinigames();
+
+    virtual void onPlayerLeft(Player& player);
 
 };

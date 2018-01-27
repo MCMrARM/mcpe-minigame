@@ -28,6 +28,12 @@ void MinigameManager::tickMinigames() {
         minigame.second->tick();
 }
 
+void MinigameManager::onPlayerLeft(Player& player) {
+    PlayerData& playerData = PlayerHelper::instance.getPlayerData(player);
+    if (playerData.currentMinigame != nullptr)
+        playerData.currentMinigame->removePlayer(&player);
+}
+
 TInstanceHook(void, _ZN5Level4tickEv, Level) {
     original(this);
     MinigameManager::instance.tickMinigames();
