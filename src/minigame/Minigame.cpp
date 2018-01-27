@@ -73,10 +73,10 @@ bool Minigame::addPlayer(Player* player) {
     broadcast("Join: " + player->getNameTag());
     players.push_back(player);
 
-    MinigameDimension::sendPlayerToDimension(player, (int) dimension->id, {pos.x + 0.5f, pos.y, pos.z + 0.5f});
-    PlayerPosLimitHelper::setPlayerLimitBox(playerData, AABB({pos.x, pos.y - 2.f, pos.z},
-                                                             {pos.x + 1.f, pos.y + 2.f, pos.z + 1.f}),
-                                            [pos](Vec3 const&) { return Vec3 {pos.x + 0.5f, pos.y, pos.z + 0.5f}; });
+    MinigameDimension::sendPlayerToDimension(player, (int) dimension->id, {pos.x + 0.5f, pos.y + 2.f, pos.z + 0.5f});
+    PlayerPosLimitHelper::setPlayerLimitBox(playerData, AABB({pos.x, pos.y, pos.z},
+                                                             {pos.x + 1.f, pos.y + 4.f, pos.z + 1.f}),
+                                            [pos](Vec3 const&) { return Vec3 {pos.x + 0.5f, pos.y + 2.f, pos.z + 0.5f}; });
 
     player->abilities = Abilities(); // reset the abilities
     player->abilities.setPlayerPermissions(PlayerPermissionLevel::VIEWER);

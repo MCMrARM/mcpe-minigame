@@ -48,7 +48,7 @@ public:
     void execute(CommandOrigin const& origin, CommandOutput& outp) override {
         std::string map = test.getMessage(origin);
         if (map.empty())
-            map = "swtest";
+            map = "swmap";
         outp.addMessage("§aThis absolutely §dworked! §e" + map);
         outp.success();
 
@@ -62,9 +62,9 @@ public:
         Dimension* dimension = origin.getLevel()->createDimension((DimensionId) dimenId);
         MapConfig mapConfig;
         mapConfig.minPlayers = 2;
-        mapConfig.tryGetMinPlayers = 4;
+        mapConfig.tryGetMinPlayers = 6;
         mapConfig.maxPlayers = 8;
-        mapConfig.spawnPositions = {{87, 10, 8}, {108, 10, 8}};
+        mapConfig.spawnPositions = {{-31, 154, 161}, {6, 154, 179}, {45, 154, 165}, {55, 154, 128}, {45, 154, 90}, {6, 154, 77}, {-34, 154, 90}, {-45, 154, 128}};
         std::shared_ptr<SkyWarsMinigame> minigame(new SkyWarsMinigame(&MinigameManager::instance, "SW-1", dimension, mapConfig));
         MinigameManager::instance.addGame(minigame);
         minigame->addPlayer((Player*) origin.getEntity());
