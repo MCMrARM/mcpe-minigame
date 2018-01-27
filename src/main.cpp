@@ -81,7 +81,6 @@ TInstanceHook(bool, _ZN8GameMode12destroyBlockERK8BlockPosa, GameMode, BlockPos 
         return false;
     }
     return original(this, bp, c);
-
 }
 
 THook(void, _ZN9OpCommand5setupER15CommandRegistry, CommandRegistry& registry) {

@@ -29,6 +29,7 @@ void LobbyManager::onPlayerArrivedInLobby(Player& player) {
     auto cmdPermissionLevel = player.getCommandPermissionLevel();
     player.abilities = dimension->level->getDefaultAbilities();
     player.setPlayerGameType(dimension->level->getLevelData()->getGameType());
+    player.abilities.setAbility(Abilities::INVULNERABLE, true);
     player.setPermissions(cmdPermissionLevel); // revert the cmd permission level & send the abilities to the client
     player.getSupplies().clearInventory(-1);
     player.clearEquipment();
