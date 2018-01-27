@@ -1,6 +1,7 @@
 #include "LobbyManager.h"
 
 #include <minecraft/entity/Player.h>
+#include <minecraft/entity/PlayerInventoryProxy.h>
 #include <minecraft/level/BlockPos.h>
 #include <minecraft/level/Level.h>
 #include <minecraft/level/LevelData.h>
@@ -29,4 +30,7 @@ void LobbyManager::onPlayerArrivedInLobby(Player& player) {
     player.abilities = dimension->level->getDefaultAbilities();
     player.setPlayerGameType(dimension->level->getLevelData()->getGameType());
     player.setPermissions(cmdPermissionLevel); // revert the cmd permission level & send the abilities to the client
+    player.getSupplies().clearInventory(-1);
+    player.clearEquipment();
+    player.sendInventory(true);
 }

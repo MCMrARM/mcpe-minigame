@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <sstream>
 #include <minecraft/entity/Player.h>
+#include <minecraft/entity/PlayerInventoryProxy.h>
 #include <minecraft/level/Level.h>
 #include <minecraft/level/Dimension.h>
 #include <minecraft/net/PacketSender.h>
@@ -85,6 +86,10 @@ bool Minigame::addPlayer(Player* player) {
     player->setPlayerGameType(GameType::SURVIVAL);
     player->abilities.setAbility(Abilities::INVULNERABLE, true);
     player->setPermissions(permissionLevel);
+
+    player->getSupplies().clearInventory(-1);
+    player->clearEquipment();
+    player->sendInventory(true);
 
     if (players.size() >= mapConfig.tryGetMinPlayers && (countdown == -1 || countdown > TICKS_ENOUGH_PLAYERS_COUNTDOWN))
         countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
