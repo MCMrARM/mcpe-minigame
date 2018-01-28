@@ -65,18 +65,18 @@ void Minigame::onStarted() {
 
 bool Minigame::addPlayer(Player* player) {
     if (started) {
-        Log::info("Minigame", "[%s] Player can't join - game has already started");
+        Log::info("Minigame", "[%s] Player can't join - game has already started", name.c_str());
         player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), TextPacket::createRaw("Error: Game has already started!"), player->getClientSubId());
         return false;
     }
     if (players.size() >= mapConfig.maxPlayers && availableSpawnPos.empty()) {
-        Log::info("Minigame", "[%s] Player can't join - max player count reached");
+        Log::info("Minigame", "[%s] Player can't join - max player count reached", name.c_str());
         player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), TextPacket::createRaw("Error: Game is full!"), player->getClientSubId());
         return false;
     }
     PlayerData& playerData = PlayerHelper::instance.getPlayerData(*player);
     if (playerData.currentMinigame != nullptr) {
-        Log::info("Minigame", "[%s] Player can't join - already in another game");
+        Log::info("Minigame", "[%s] Player can't join - already in another game", name.c_str());
         player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), TextPacket::createRaw("Error: You are already in another game!"), player->getClientSubId());
         return false;
     }

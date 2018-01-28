@@ -16,5 +16,6 @@ TInstanceHook(void, _ZN6Player3dieERK18EntityDamageSource, Player, EntityDamageS
         auto msg = src.getDeathMessage(getNameTag(), this);
         playerData.currentMinigame->broadcast("§c" + I18n::get(msg.message, msg.args));
         playerData.currentMinigame->removePlayer(this);
+        playerData.currentMinigame = nullptr;
     }
 }
