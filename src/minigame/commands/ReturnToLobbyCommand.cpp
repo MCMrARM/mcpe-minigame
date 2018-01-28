@@ -17,10 +17,10 @@ void ReturnToLobbyCommand::execute(CommandOrigin const& origin, CommandOutput& o
         return;
     Player& player = *((Player*) origin.getEntity());
     PlayerData& data = PlayerHelper::instance.getPlayerData(player);
+    PlayerPosLimitHelper::clearPlayerLimit(data);
+    LobbyManager::instance.sendPlayerToLobby(player);
     if (data.currentMinigame != nullptr) {
         data.currentMinigame->removePlayer(&player);
         data.currentMinigame = nullptr;
     }
-    PlayerPosLimitHelper::clearPlayerLimit(data);
-    LobbyManager::instance.sendPlayerToLobby(player);
 }

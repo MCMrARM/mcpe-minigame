@@ -11,10 +11,10 @@ TInstanceHook(void, _ZN6Player3dieERK18EntityDamageSource, Player, EntityDamageS
     //original(this, src);
     serializationSetHealth(20);
     PlayerData& playerData = PlayerHelper::instance.getPlayerData(*this);
+    LobbyManager::instance.sendPlayerToLobby(*this);
     if (playerData.currentMinigame != nullptr) {
         auto msg = src.getDeathMessage(getNameTag(), this);
         playerData.currentMinigame->broadcast("§c" + I18n::get(msg.message, msg.args));
         playerData.currentMinigame->removePlayer(this);
     }
-    LobbyManager::instance.sendPlayerToLobby(*this);
 }

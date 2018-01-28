@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <minecraft/level/BlockPos.h>
+#include <memory>
 #include "MapConfig.h"
 
 class Dimension;
@@ -11,7 +12,7 @@ class Player;
 class Packet;
 class MinigameManager;
 
-class Minigame {
+class Minigame : public std::enable_shared_from_this<Minigame> {
 
 private:
     MinigameManager* manager;
@@ -27,6 +28,8 @@ private:
 protected:
     inline Dimension* getDimension() { return dimension; }
     inline MapConfig& getMapConfig() { return mapConfig; }
+
+    void destroy();
 
 public:
     static const int TICKS_INITIAL_COUNTDOWN = 20 * 60;
@@ -52,6 +55,8 @@ public:
     virtual bool isJoinable() { return !started && players.size() < mapConfig.maxPlayers; }
     virtual bool addPlayer(Player* player);
     virtual void removePlayer(Player* player);
+
+    virtual void checkWinner();
 
     void broadcast(Packet const& packet);
     void broadcast(std::string const& text);

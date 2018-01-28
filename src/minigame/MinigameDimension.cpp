@@ -52,6 +52,11 @@ void MinigameDimension::init() {
     this->runtimeLightingManager = std::unique_ptr<RuntimeLightingManager>(new RuntimeLightingManager(*this));
 }
 
+void MinigameDimension::requestDeletion() {
+    shouldDelete = true;
+    startLeaveGame();
+}
+
 std::unique_ptr<Dimension> MinigameDimension::createDimension(Level& level, int index) {
     return std::unique_ptr<Dimension>(new MinigameDimension(level, dimensions[index - 4].storage.get(), (DimensionId) index, (short) 0x100));
 }
@@ -133,6 +138,16 @@ TInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK18Pl
     }
 }
 
+void MinigameDimension::deleteUnusedDimensions(Level& level) {
+    for (auto it = level.dimensions.begin(); it != level.dimensions.end(); ) {
+        if (it->first >= 4 && ((MinigameDimension*) it->second.get())->shouldDelete && it->second->isLeaveGameDone()) {
+            it = level.dimensions.erase(it);
+        } else {
+            it++;
+        }
+    }
+}
+
 TClasslessInstanceHook(void, _ZN14DBChunkStorage13saveLiveChunkER10LevelChunk, LevelChunk* chunk) {
     Log::trace("MinigameDimension", "saveLiveChunk - stubbed");
     chunk->setSaved();
@@ -154,4 +169,7 @@ __attribute__((constructor))
 static void _patchDimensionId() {
     size_t patchOff = (size_t) dlsym(MinecraftHandle(), "_ZN14DBChunkStorage16_loadChunkFromDBER10LevelChunk") + 0x753 - 0x6F0;
     patchCallInstruction((void*) patchOff, (void*) loadChunkFromDimensionIdHook, false);
+
+    patchOff = (size_t) dlsym(MinecraftHandle(), "_ZN9DimensionC2ER5Level11DimensionIds") + 0x6E1 - 0x3B0;
+    ((char*) (void*) patchOff)[0] = 0x7D;
 }

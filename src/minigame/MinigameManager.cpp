@@ -2,6 +2,7 @@
 
 #include <minecraft/level/Level.h>
 #include "../statichook.h"
+#include "MinigameDimension.h"
 
 MinigameManager MinigameManager::instance;
 
@@ -36,5 +37,6 @@ void MinigameManager::onPlayerLeft(Player& player) {
 
 TInstanceHook(void, _ZN5Level4tickEv, Level) {
     original(this);
+    MinigameDimension::deleteUnusedDimensions(*this);
     MinigameManager::instance.tickMinigames();
 }

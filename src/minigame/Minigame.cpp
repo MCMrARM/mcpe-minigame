@@ -12,7 +12,20 @@
 #include "../util/PlayerHelper.h"
 #include "../util/Log.h"
 #include "MinigameDimension.h"
+#include "MinigameManager.h"
 #include "../util/PlayerPosLimitHelper.h"
+#include "../lobby/LobbyManager.h"
+
+void Minigame::destroy() {
+    for (Player* player : players) {
+        PlayerData& playerData = PlayerHelper::instance.getPlayerData(*player);
+        playerData.currentMinigame = nullptr;
+        LobbyManager::instance.sendPlayerToLobby(*player);
+    }
+    players.clear();
+    manager->removeGame(shared_from_this());
+    ((MinigameDimension*) dimension)->requestDeletion();
+}
 
 void Minigame::tick() {
     if (countdown > 0) {
@@ -111,6 +124,17 @@ void Minigame::removePlayer(Player* player) {
         countdown = TICKS_INITIAL_COUNTDOWN;
     if (players.size() < mapConfig.minPlayers && countdown != -1)
         countdown = -1;
+    checkWinner();
+    if (players.empty())
+        destroy();
+}
+
+void Minigame::checkWinner() {
+    if (players.size() == 1) {
+        TextPacket pk = TextPacket::createRaw("§a§l" + players[0]->getNameTag() + " §r§a has won the match " + name);
+        for (auto const& player : dimension->level->getUsers())
+            player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), pk, player->getClientSubId());
+    }
 }
 
 void Minigame::broadcast(Packet const& packet) {
