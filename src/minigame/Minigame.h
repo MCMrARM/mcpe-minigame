@@ -56,7 +56,7 @@ public:
     virtual bool addPlayer(Player* player);
     virtual void removePlayer(Player* player);
 
-    virtual void checkWinner();
+    virtual bool checkWinner();
 
     void broadcast(Packet const& packet);
     void broadcast(std::string const& text);

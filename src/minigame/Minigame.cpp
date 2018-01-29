@@ -124,17 +124,18 @@ void Minigame::removePlayer(Player* player) {
         countdown = TICKS_INITIAL_COUNTDOWN;
     if (players.size() < mapConfig.minPlayers && countdown != -1)
         countdown = -1;
-    checkWinner();
-    if (players.empty())
+    if (checkWinner() || players.empty())
         destroy();
 }
 
-void Minigame::checkWinner() {
-    if (players.size() == 1) {
-        TextPacket pk = TextPacket::createRaw("§a§l" + players[0]->getNameTag() + " §r§a has won the match " + name);
+bool Minigame::checkWinner() {
+    if (players.size() == 1 && started) {
+        TextPacket pk = TextPacket::createRaw("§a§l" + players[0]->getNameTag() + "§r§a has won the match " + name);
         for (auto const& player : dimension->level->getUsers())
             player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), pk, player->getClientSubId());
+        return true;
     }
+    return false;
 }
 
 void Minigame::broadcast(Packet const& packet) {
