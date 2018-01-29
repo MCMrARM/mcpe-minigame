@@ -2,6 +2,7 @@
 
 #include <minecraft/entity/Player.h>
 #include <minecraft/entity/PlayerInventoryProxy.h>
+#include <minecraft/entity/AttributeInstance.h>
 #include <minecraft/level/BlockPos.h>
 #include <minecraft/level/Level.h>
 #include <minecraft/level/LevelData.h>
@@ -35,4 +36,6 @@ void LobbyManager::onPlayerArrivedInLobby(Player& player) {
     player.getSupplies().clearInventory(-1);
     player.clearEquipment();
     player.sendInventory(true);
+    player.serializationSetHealth(20);
+    player.getMutableAttribute(Player::HUNGER)->resetToMaxValue();
 }
