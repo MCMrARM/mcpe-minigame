@@ -38,4 +38,5 @@ void LobbyManager::onPlayerArrivedInLobby(Player& player) {
     player.sendInventory(true);
     player.serializationSetHealth(20);
     player.getMutableAttribute(Player::HUNGER)->resetToMaxValue();
+    player.getMutableAttribute(Player::SATURATION)->resetToMaxValue();
 }
