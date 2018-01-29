@@ -18,12 +18,14 @@ PlayerEventListener::~PlayerEventListener() {
 }
 
 void PlayerHelper::onPlayerJoined(Player& player) {
+    Log::info("PlayerHelper", "Player joined: %s", player.getNameTag().c_str());
     PlayerData& data = playerData[&player];
     for (PlayerEventListener* listener : listeners)
         listener->onPlayerJoined(player);
 }
 
 void PlayerHelper::onPlayerLeft(Player& player) {
+    Log::info("PlayerHelper", "Player left: %s", player.getNameTag().c_str());
     for (PlayerEventListener* listener : listeners)
         listener->onPlayerLeft(player);
     playerData.erase(&player);
@@ -60,13 +62,16 @@ TInstanceHook(ServerPlayer*, _ZN20ServerNetworkHandler16_createNewPlayerERK17Net
 
 TInstanceHook(void, _ZN20ServerNetworkHandler24onReady_ClientGenerationER6PlayerRK17NetworkIdentifier,
               ServerNetworkHandler, Player& player, NetworkIdentifier const& nid) {
-    original(this, player, nid);
+    // original(this, player, nid); - do not call original so there are no join messages
     PlayerHelper::instance.onPlayerJoined(player);
 }
 
 TInstanceHook(void, _ZN20ServerNetworkHandler13_onPlayerLeftEP12ServerPlayer,
               ServerNetworkHandler, ServerPlayer* player) {
-    original(this, player);
+    // original(this, player); - do not call original so there are no quit messages
+    player->disconnect();
+    player->remove();
+
     if (player != nullptr)
         PlayerHelper::instance.onPlayerLeft(*player);
 }
