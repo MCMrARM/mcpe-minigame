@@ -9,6 +9,7 @@
 #include <minecraft/net/PacketSender.h>
 #include <minecraft/net/Packet.h>
 #include <minecraft/game/GameType.h>
+#include <minecraft/entity/AttributeInstance.h>
 #include "../util/PlayerHelper.h"
 #include "../util/Log.h"
 #include "MinigameDimension.h"
@@ -103,6 +104,9 @@ bool Minigame::addPlayer(Player* player) {
     player->getSupplies().clearInventory(-1);
     player->clearEquipment();
     player->sendInventory(true);
+    player->serializationSetHealth(20);
+    player->getMutableAttribute(Player::HUNGER)->resetToMaxValue();
+    player->getMutableAttribute(Player::SATURATION)->resetToMaxValue();
 
     if (players.size() >= mapConfig.tryGetMinPlayers && (countdown == -1 || countdown > TICKS_ENOUGH_PLAYERS_COUNTDOWN))
         countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
