@@ -15,6 +15,7 @@ void LobbyManager::setDimension(Dimension* dimension) {
     this->dimension = dimension;
     dimension->level->getDefaultAbilities().setPlayerPermissions(PlayerPermissionLevel::VIEWER);
     dimension->level->getDefaultAbilities().setAbility(Abilities::INVULNERABLE, true);
+    dimension->level->getDefaultAbilities().setAbility(Abilities::DOORS_AND_SWITCHES, true);
     dimension->level->getDefaultAbilities().setAbility(Abilities::WALKSPEED, 0.15f); // default is 0.05f
     dimension->level->getLevelData()->setGameType(GameType::SURVIVAL);
 }
