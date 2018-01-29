@@ -21,6 +21,8 @@ public:
 
     void sendPlayerToLobby(Player& player);
 
+    void onPlayerMoved(Player& player, Vec3 const& pos);
+
     virtual void onPlayerJoined(Player& player) {
         onPlayerArrivedInLobby(player);
     }

@@ -7,8 +7,9 @@
 #include <minecraft/level/Level.h>
 #include <minecraft/level/LevelData.h>
 #include <minecraft/level/BlockSource.h>
+#include <minecraft/net/Packet.h>
+#include <minecraft/net/PacketSender.h>
 #include "../minigame/MinigameDimension.h"
-#include "../statichook.h"
 
 LobbyManager LobbyManager::instance;
 
@@ -39,4 +40,19 @@ void LobbyManager::onPlayerArrivedInLobby(Player& player) {
     player.serializationSetHealth(20);
     player.getMutableAttribute(Player::HUNGER)->resetToMaxValue();
     player.getMutableAttribute(Player::SATURATION)->resetToMaxValue();
+}
+
+void LobbyManager::onPlayerMoved(Player& player, Vec3 const& pos) {
+    if (pos.y < 0.f) {
+        auto pos = player.getLevel()->getSharedSpawnPos();
+
+        MovePlayerPacket reply;
+        reply.entityId = player.getRuntimeID();
+        reply.pos = {pos.x, pos.y + 2.f, pos.z};
+        reply.rot = player.getRotation();
+        reply.headRot = player.getYHeadRot();
+        reply.mode = 1;
+        reply.onGround = false;
+        player.getLevel()->getPacketSender()->sendToClient(player.getClientId(), reply, player.getClientSubId());
+    }
 }
