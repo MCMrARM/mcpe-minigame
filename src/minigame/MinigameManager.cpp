@@ -35,6 +35,13 @@ void MinigameManager::onPlayerLeft(Player& player) {
         playerData.currentMinigame->removePlayer(&player);
 }
 
+std::string MinigameManager::getMinigameNameForPrefix(std::string const& prefix) {
+    int index = ++prefixIndex[prefix];
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%s-%i", prefix.c_str(), index);
+    return std::string(buf);
+}
+
 TInstanceHook(void, _ZN5Level4tickEv, Level) {
     original(this);
     MinigameDimension::deleteUnusedDimensions(*this);

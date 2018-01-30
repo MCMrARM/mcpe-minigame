@@ -17,10 +17,8 @@ void JoinMinigameCommand::execute(CommandOrigin const& origin, CommandOutput& ou
     if (origin.getOriginType() != CommandOriginType::PLAYER)
         return;
     auto minigame = MinigameCommandHelper::findMinigame(this->minigame, origin, outp);
-    if (minigame == nullptr) {
-        outp.error("No such game");
+    if (minigame == nullptr)
         return;
-    }
     if (minigame->addPlayer((Player*) origin.getEntity()))
         outp.success();
     else
