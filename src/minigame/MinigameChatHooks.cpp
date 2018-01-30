@@ -15,7 +15,7 @@ TClasslessInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentif
     std::string senderName = /*packet.sender*/ player->getNameTag();
     if (senderName == "MrARMDev")
         senderName = "§2@§a" + senderName + "§r";
-    TextPacket broadcastPacket {(TextPacketType) 1, senderName, packet.message, {}, false, packet.xuid};
+    TextPacket broadcastPacket {(TextPacketType) 1, senderName, packet.message, {}, false, ""};
     PlayerData& playerData = PlayerHelper::instance.getPlayerData(*player);
     const char* gameName = "Lobby";
     if (playerData.currentMinigame != nullptr) {
