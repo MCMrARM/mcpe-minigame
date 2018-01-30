@@ -1,8 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <minecraft/level/Dimension.h>
 #include <minecraft/math/Vec3.h>
 
@@ -14,7 +13,8 @@ private:
     struct DefinedDimension {
         std::unique_ptr<LevelStorage> storage;
     };
-    static std::vector<DefinedDimension> dimensions;
+    static std::unordered_map<int, DefinedDimension> dimensions;
+    static int nextDimensionId;
 
     LevelStorage* storage;
 
@@ -22,6 +22,8 @@ private:
 
 public:
     static int defineDimension(std::unique_ptr<LevelStorage> storage);
+
+    static void undefineDimension(int dimension);
 
     static std::unique_ptr<Dimension> createDimension(Level& level, int index);
 

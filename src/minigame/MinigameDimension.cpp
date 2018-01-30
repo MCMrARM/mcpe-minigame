@@ -23,7 +23,8 @@
 #include "FakeNetherDimension.h"
 #include "EmptyWorldGenerator.h"
 
-std::vector<MinigameDimension::DefinedDimension> MinigameDimension::dimensions;
+std::unordered_map<int, MinigameDimension::DefinedDimension> MinigameDimension::dimensions;
+int MinigameDimension::nextDimensionId = 4;
 
 MinigameDimension::MinigameDimension(Level& level, LevelStorage* storage, DimensionId dimensionId, short maxHeight) :
         Dimension(level, (DimensionId) 3, maxHeight), storage(storage) {
@@ -36,8 +37,13 @@ MinigameDimension::MinigameDimension(Level& level, LevelStorage* storage, Dimens
 }
 
 int MinigameDimension::defineDimension(std::unique_ptr<LevelStorage> storage) {
-    dimensions.push_back({ std::move(storage) });
-    return dimensions.size() - 1 + 4;
+    int dimenId = nextDimensionId++;
+    dimensions[dimenId] = { std::move(storage) };
+    return dimenId;
+}
+
+void MinigameDimension::undefineDimension(int dimension) {
+    dimensions.erase(dimension);
 }
 
 void MinigameDimension::init() {
@@ -58,7 +64,7 @@ void MinigameDimension::requestDeletion() {
 }
 
 std::unique_ptr<Dimension> MinigameDimension::createDimension(Level& level, int index) {
-    return std::unique_ptr<Dimension>(new MinigameDimension(level, dimensions[index - 4].storage.get(), (DimensionId) index, (short) 0x100));
+    return std::unique_ptr<Dimension>(new MinigameDimension(level, dimensions[index].storage.get(), (DimensionId) index, (short) 0x100));
 }
 
 void MinigameDimension::sendPlayerToDimension(Player* player, int dimension, Vec3 targetPos) {

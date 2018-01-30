@@ -25,6 +25,7 @@ void Minigame::destroy() {
     }
     players.clear();
     manager->removeGame(shared_from_this());
+    MinigameDimension::undefineDimension((int) dimension->id);
     ((MinigameDimension*) dimension)->requestDeletion();
 }
 
