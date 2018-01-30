@@ -5,6 +5,7 @@
 #include "../statichook.h"
 #include "../util/PlayerHelper.h"
 #include "Minigame.h"
+#include "../util/Log.h"
 
 TClasslessInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentifierRK10TextPacket,
                        NetworkIdentifier const& nid, TextPacket const& packet) {
@@ -16,7 +17,9 @@ TClasslessInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentif
         senderName = "§2@§a" + senderName + "§r";
     TextPacket broadcastPacket {(TextPacketType) 1, senderName, packet.message, {}, false, packet.xuid};
     PlayerData& playerData = PlayerHelper::instance.getPlayerData(*player);
+    const char* gameName = "Lobby";
     if (playerData.currentMinigame != nullptr) {
+        gameName = playerData.currentMinigame->getName().c_str();
         playerData.currentMinigame->broadcast(broadcastPacket);
     } else {
         for (auto const& otherPlayer : player->getLevel()->getUsers()) {
@@ -26,4 +29,5 @@ TClasslessInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentif
                                                                     otherPlayer->getClientSubId());
         }
     }
+    Log::info("Chat", "[%s] <%s> %s", gameName, player->getNameTag().c_str(), packet.message.c_str());
 }
