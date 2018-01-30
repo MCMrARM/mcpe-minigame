@@ -155,7 +155,7 @@ void MinigameDimension::deleteUnusedDimensions(Level& level) {
 }
 
 TClasslessInstanceHook(void, _ZN14DBChunkStorage13saveLiveChunkER10LevelChunk, LevelChunk* chunk) {
-    Log::trace("MinigameDimension", "saveLiveChunk - stubbed");
+    // Log::trace("MinigameDimension", "saveLiveChunk - stubbed");
     chunk->setSaved();
 }
 

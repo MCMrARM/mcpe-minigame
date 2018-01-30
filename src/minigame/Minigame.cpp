@@ -125,14 +125,18 @@ void Minigame::removePlayer(Player* player) {
     }
     broadcast("§8Quit: §7" + player->getNameTag());
     players.erase(std::remove(players.begin(), players.end(), player), players.end());
-    if (players.size() == mapConfig.maxPlayers - 1 && countdown != -1 && countdown < TICKS_FULL_PLAYERS_COUNTDOWN)
-        countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
-    if (players.size() == mapConfig.tryGetMinPlayers - 1 && countdown != -1 && countdown < TICKS_ENOUGH_PLAYERS_COUNTDOWN)
-        countdown = TICKS_INITIAL_COUNTDOWN;
-    if (players.size() < mapConfig.minPlayers && countdown != -1)
-        countdown = -1;
-    if (checkWinner() || players.empty())
-        destroy();
+    if (!started) {
+        if (players.size() == mapConfig.maxPlayers - 1 && countdown != -1 && countdown < TICKS_FULL_PLAYERS_COUNTDOWN)
+            countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
+        if (players.size() == mapConfig.tryGetMinPlayers - 1 && countdown != -1 &&
+            countdown < TICKS_ENOUGH_PLAYERS_COUNTDOWN)
+            countdown = TICKS_INITIAL_COUNTDOWN;
+        if (players.size() < mapConfig.minPlayers && countdown != -1)
+            countdown = -1;
+    } else {
+        if (checkWinner() || players.empty())
+            destroy();
+    }
 }
 
 bool Minigame::checkWinner() {

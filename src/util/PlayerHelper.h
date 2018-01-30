@@ -49,5 +49,6 @@ public:
 
     void onPlayerConnected(NetworkIdentifier const& nid, Player& player);
     void onPlayerDisconnected(NetworkIdentifier const& nid);
+    void onPlayerDestroyed(Player& player);
 
 };

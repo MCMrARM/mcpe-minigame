@@ -28,17 +28,21 @@ void PlayerHelper::onPlayerLeft(Player& player) {
     Log::info("PlayerHelper", "Player left: %s", player.getNameTag().c_str());
     for (PlayerEventListener* listener : listeners)
         listener->onPlayerLeft(player);
-    playerData.erase(&player);
 }
 
 void PlayerHelper::onPlayerConnected(NetworkIdentifier const& nid, Player& player) {
     Log::trace("PlayerHelper", "Player connected from %s", nid.toString().c_str());
+    PlayerData& data = playerData[&player];
     playerFastLookupTable[nid].push_back(&player);
 }
 
 void PlayerHelper::onPlayerDisconnected(NetworkIdentifier const& nid) {
     playerFastLookupTable.erase(nid);
     Log::trace("PlayerHelper", "Player disconnected (%s)", nid.toString().c_str());
+}
+
+void PlayerHelper::onPlayerDestroyed(Player& player) {
+    playerData.erase(&player);
 }
 
 Player* PlayerHelper::findNetPlayer(NetworkIdentifier const& nid, unsigned char subId) {
@@ -80,4 +84,9 @@ TInstanceHook(void, _ZN20ServerNetworkHandler12onDisconnectERK17NetworkIdentifie
               ServerNetworkHandler, NetworkIdentifier const& nid, std::string const& str, bool b) {
     original(this, nid, str, b);
     PlayerHelper::instance.onPlayerDisconnected(nid);
+}
+
+TInstanceHook(void, _ZN6PlayerD2Ev, Player) {
+    PlayerHelper::instance.onPlayerDestroyed(*this);
+    original(this);
 }
