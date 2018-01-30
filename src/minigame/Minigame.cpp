@@ -89,6 +89,8 @@ bool Minigame::addPlayer(Player* player) {
     auto pos = playerSpawnPos[player] = availableSpawnPos[availableSpawnPos.size() - 1];
     availableSpawnPos.pop_back();
 
+    player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), TextPacket::createRaw("§aYou are now in §l" + name), player->getClientSubId());
+
     broadcast("§8Join: §7" + player->getNameTag());
     players.push_back(player);
 
