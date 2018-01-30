@@ -19,3 +19,10 @@ TInstanceHook(void, _ZN6Player3dieERK18EntityDamageSource, Player, EntityDamageS
         playerData.currentMinigame = nullptr;
     }
 }
+
+TInstanceHook(void, _ZN6Player19causeFoodExhaustionEf, Player, float exhaustion) {
+    PlayerData& playerData = PlayerHelper::instance.getPlayerData(*this);
+    if (playerData.currentMinigame == nullptr)
+        return;
+    original(this, exhaustion);
+}
