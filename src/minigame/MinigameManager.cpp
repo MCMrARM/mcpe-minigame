@@ -1,7 +1,15 @@
 #include "MinigameManager.h"
 
 #include <minecraft/level/Level.h>
+#include <minecraft/level/LevelStorage.h>
+#include <minecraft/level/LevelStorageSource.h>
+#include <minecraft/game/Minecraft.h>
+#include <minecraft/server/ServerInstance.h>
+#include <minecraft/resource/SkinPackKeyProvider.h>
+#include <fstream>
+#include <json/json.h>
 #include "../statichook.h"
+#include "../main.h"
 #include "MinigameDimension.h"
 
 MinigameManager MinigameManager::instance;
@@ -40,6 +48,23 @@ std::string MinigameManager::getMinigameNameForPrefix(std::string const& prefix)
     char buf[32];
     snprintf(buf, sizeof(buf), "%s-%i", prefix.c_str(), index);
     return std::string(buf);
+}
+
+Dimension* MinigameManager::createGameDimension(Level* level, std::string const& map) {
+    static SkinPackKeyProvider skinPackKeyProvider;
+    auto levelStorage = serverInstance->minecraft->getLevelSource().createLevelStorage(map, std::string(), skinPackKeyProvider);
+    int dimenId = MinigameDimension::defineDimension(std::move(levelStorage));
+    return level->createDimension((DimensionId) dimenId);
+}
+
+MapConfig MinigameManager::loadMapConfig(std::string const& map) {
+    std::ifstream mapConfigStream (serverInstance->minecraft->getLevelSource().getBasePath() + "/" + map + "/config.json");
+    Json::Reader reader;
+    Json::Value mapConfigJson;
+    reader.parse(mapConfigStream, mapConfigJson);
+    MapConfig mapConfig;
+    mapConfig.loadFromJSON(mapConfigJson);
+    return mapConfig;
 }
 
 TInstanceHook(void, _ZN5Level4tickEv, Level) {
