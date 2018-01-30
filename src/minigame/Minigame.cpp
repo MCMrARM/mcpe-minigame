@@ -32,7 +32,9 @@ void Minigame::destroy() {
 void Minigame::tick() {
     if (countdown > 0) {
         countdown--;
-        if ((countdown % 20) == 0 && countdown > 0) {
+        if (((countdown % 200) == 0 || // every 10 seconds
+                (countdown <= 100 && (countdown % 20) == 0)) && // every second in the last 5 seconds
+                countdown > 0) {
             /*std::stringstream ss;
             ss << "Game starting in " << (countdown / 20) << " seconds";
             broadcast(ss.str());*/
