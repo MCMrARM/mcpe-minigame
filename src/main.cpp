@@ -15,6 +15,8 @@
 #include <minecraft/resource/SkinPackKeyProvider.h>
 #include <sstream>
 #include <string>
+#include <json/json.h>
+#include <fstream>
 #include "statichook.h"
 #include "main.h"
 #include "minigame/Minigame.h"
@@ -60,11 +62,12 @@ public:
         }
 
         Dimension* dimension = origin.getLevel()->createDimension((DimensionId) dimenId);
+        std::ifstream mapConfigStream (serverInstance->minecraft->getLevelSource().getBasePath() + "/" + map + "/config.json");
+        Json::Reader reader;
+        Json::Value mapConfigJson;
+        reader.parse(mapConfigStream, mapConfigJson);
         MapConfig mapConfig;
-        mapConfig.minPlayers = 2;
-        mapConfig.tryGetMinPlayers = 6;
-        mapConfig.maxPlayers = 8;
-        mapConfig.spawnPositions = {{-31, 154, 161}, {6, 154, 179}, {45, 154, 165}, {55, 154, 128}, {45, 154, 90}, {6, 154, 77}, {-34, 154, 90}, {-45, 154, 128}};
+        mapConfig.loadFromJSON(mapConfigJson);
         std::shared_ptr<SkyWarsMinigame> minigame(new SkyWarsMinigame(&MinigameManager::instance, "SW-1", dimension, mapConfig));
         MinigameManager::instance.addGame(minigame);
         minigame->addPlayer((Player*) origin.getEntity());
