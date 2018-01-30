@@ -6,7 +6,7 @@
 #include "MinigameCommandHelper.h"
 
 void ForceStartMinigameCommand::setup(CommandRegistry& registry) {
-    registry.registerCommand("forcestart", "Force start a minigame", (CommandPermissionLevel) 0, (CommandFlag) 0,
+    registry.registerCommand("forcestart", "Force start a minigame", (CommandPermissionLevel) 2, (CommandFlag) 0,
                              (CommandFlag) 0);
     registry.registerOverload<ForceStartMinigameCommand>("forcestart", CommandVersion(1, INT_MAX), CommandParameterData(
             type_id_minecraft_symbol<CommandRegistry>("_ZZ7type_idI15CommandRegistrySsE8typeid_tIT_EvE2id"),

@@ -7,7 +7,7 @@
 #include "../skywars/SkyWarsMinigame.h"
 
 void CreateMinigameCommand::setup(CommandRegistry& registry) {
-    registry.registerCommand("create", "Create a minigame", (CommandPermissionLevel) 0, (CommandFlag) 0,
+    registry.registerCommand("create", "Create a minigame", (CommandPermissionLevel) 2, (CommandFlag) 0,
                              (CommandFlag) 0);
     registry.registerOverload<CreateMinigameCommand>("create", CommandVersion(1, INT_MAX), CommandParameterData(
             type_id_minecraft_symbol<CommandRegistry>("_ZZ7type_idI15CommandRegistrySsE8typeid_tIT_EvE2id"),
