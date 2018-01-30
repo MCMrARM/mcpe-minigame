@@ -92,6 +92,7 @@ void MinigameDimension::sendPlayerToDimension(Player* player, int dimension, Vec
     PlayStatusPacket pkStatus;
     pkStatus.status = 3;
     player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), pkStatus, player->getClientSubId());*/
+    player->setContainerManager(nullptr); // Workaround for a MCPE crash: it'll still crash the client but at least not the server.
     player->changeDimension((DimensionId) 1, false);
 }
 
