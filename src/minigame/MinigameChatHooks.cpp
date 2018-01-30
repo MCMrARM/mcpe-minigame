@@ -12,6 +12,11 @@ TClasslessInstanceHook(void, _ZN20ServerNetworkHandler6handleERK17NetworkIdentif
     Player* player = PlayerHelper::instance.findNetPlayer(nid, packet.playerSubIndex);
     if (player == nullptr)
         return;
+    if (packet.message.find('\n') != std::string::npos || packet.message.find('§') != std::string::npos) {
+        TextPacket pk = TextPacket::createRaw("§cError: Your message contained invalid characters.");
+        player->getLevel()->getPacketSender()->sendToClient(player->getClientId(), pk, player->getClientSubId());
+        return;
+    }
     std::string senderName = /*packet.sender*/ player->getNameTag();
     if (senderName == "MrARMDev")
         senderName = "§2@§a" + senderName + "§r";
