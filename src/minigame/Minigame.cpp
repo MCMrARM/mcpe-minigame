@@ -108,6 +108,8 @@ bool Minigame::addPlayer(Player* player) {
     player->getMutableAttribute(Player::HUNGER)->resetToMaxValue();
     player->getMutableAttribute(Player::SATURATION)->resetToMaxValue();
 
+    if (players.size() >= mapConfig.minPlayers && (countdown == -1 || countdown > TICKS_INITIAL_COUNTDOWN))
+        countdown = TICKS_INITIAL_COUNTDOWN;
     if (players.size() >= mapConfig.tryGetMinPlayers && (countdown == -1 || countdown > TICKS_ENOUGH_PLAYERS_COUNTDOWN))
         countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
     if (players.size() >= mapConfig.maxPlayers && (countdown == -1 || countdown > TICKS_FULL_PLAYERS_COUNTDOWN))
