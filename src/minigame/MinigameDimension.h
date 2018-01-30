@@ -11,7 +11,7 @@ class MinigameDimension : public Dimension {
 
 private:
     struct DefinedDimension {
-        std::unique_ptr<LevelStorage> storage;
+        std::shared_ptr<LevelStorage> storage;
     };
     static std::unordered_map<int, DefinedDimension> dimensions;
     static int nextDimensionId;
@@ -21,7 +21,7 @@ private:
     bool shouldDelete = false;
 
 public:
-    static int defineDimension(std::unique_ptr<LevelStorage> storage);
+    static int defineDimension(std::shared_ptr<LevelStorage> storage);
 
     static void undefineDimension(int dimension);
 

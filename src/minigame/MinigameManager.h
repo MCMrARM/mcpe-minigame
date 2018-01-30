@@ -7,12 +7,14 @@
 
 class Level;
 class Dimension;
+class LevelStorage;
 
 class MinigameManager : public PlayerEventListener {
 
 private:
     std::unordered_map<std::string, std::shared_ptr<Minigame>> minigames;
     std::unordered_map<std::string, int> prefixIndex;
+    std::unordered_map<std::string, std::shared_ptr<LevelStorage>> maps;
 
     Dimension* createGameDimension(Level* level, std::string const& map);
     MapConfig loadMapConfig(std::string const& map);

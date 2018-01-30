@@ -51,9 +51,13 @@ std::string MinigameManager::getMinigameNameForPrefix(std::string const& prefix)
 }
 
 Dimension* MinigameManager::createGameDimension(Level* level, std::string const& map) {
-    static SkinPackKeyProvider skinPackKeyProvider;
-    auto levelStorage = serverInstance->minecraft->getLevelSource().createLevelStorage(map, std::string(), skinPackKeyProvider);
-    int dimenId = MinigameDimension::defineDimension(std::move(levelStorage));
+    if (maps.count(map) == 0) {
+        static SkinPackKeyProvider skinPackKeyProvider;
+        auto storage = serverInstance->minecraft->getLevelSource().createLevelStorage(map, std::string(),
+                                                                                      skinPackKeyProvider);
+        maps[map] = std::shared_ptr<LevelStorage>(storage.release());
+    }
+    int dimenId = MinigameDimension::defineDimension(maps.at(map));
     return level->createDimension((DimensionId) dimenId);
 }
 

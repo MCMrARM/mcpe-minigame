@@ -36,7 +36,7 @@ MinigameDimension::MinigameDimension(Level& level, LevelStorage* storage, Dimens
     biomeSource = ThreadLocal<BiomeSource>([]() { return std::unique_ptr<BiomeSource>(new BiomeSource(7, (GeneratorType) 1)); });
 }
 
-int MinigameDimension::defineDimension(std::unique_ptr<LevelStorage> storage) {
+int MinigameDimension::defineDimension(std::shared_ptr<LevelStorage> storage) {
     int dimenId = nextDimensionId++;
     dimensions[dimenId] = { std::move(storage) };
     return dimenId;

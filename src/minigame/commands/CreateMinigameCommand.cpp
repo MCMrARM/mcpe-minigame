@@ -21,7 +21,7 @@ void CreateMinigameCommand::execute(CommandOrigin const& origin, CommandOutput& 
     outp.addMessage("Creating minigame with map: " + map);
 
     std::string name = MinigameManager::instance.getMinigameNameForPrefix("SW");
-    auto minigame = MinigameManager::instance.createGame<SkyWarsMinigame>(name, origin.getLevel(), name);
+    auto minigame = MinigameManager::instance.createGame<SkyWarsMinigame>(name, origin.getLevel(), map);
     if (!minigame) {
         outp.error("Failed to create minigame");
         return;
