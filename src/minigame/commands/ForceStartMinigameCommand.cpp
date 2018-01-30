@@ -8,10 +8,20 @@
 void ForceStartMinigameCommand::setup(CommandRegistry& registry) {
     registry.registerCommand("forcestart", "Force start a minigame", (CommandPermissionLevel) 2, (CommandFlag) 0,
                              (CommandFlag) 0);
-    registry.registerOverload<ForceStartMinigameCommand>("forcestart", CommandVersion(1, INT_MAX), CommandParameterData(
+    registry.registerOverload<ForceStartMinigameCommand>("forcestart", CommandVersion(1, INT_MAX),
+                                                         CommandParameterData(
             type_id_minecraft_symbol<CommandRegistry>("_ZZ7type_idI15CommandRegistrySsE8typeid_tIT_EvE2id"),
             &CommandRegistry::parse<std::string>, "minigame", (CommandParameterDataType) 0, nullptr,
-            offsetof(ForceStartMinigameCommand, minigame), true, -1));
+            offsetof(ForceStartMinigameCommand, minigame), true, -1),
+                                                         CommandParameterData(
+            type_id_minecraft_symbol<CommandRegistry>("_ZZ7type_idI15CommandRegistryiE8typeid_tIT_EvE2id"),
+            &CommandRegistry::parse<int>, "time", (CommandParameterDataType) 0, nullptr,
+            offsetof(ForceStartMinigameCommand, time), true, -1));
+    registry.registerOverload<ForceStartMinigameCommand>("forcestart", CommandVersion(1, INT_MAX),
+                                                         CommandParameterData(
+             type_id_minecraft_symbol<CommandRegistry>("_ZZ7type_idI15CommandRegistryiE8typeid_tIT_EvE2id"),
+             &CommandRegistry::parse<int>, "time", (CommandParameterDataType) 0, nullptr,
+             offsetof(ForceStartMinigameCommand, time), true, -1));
 }
 
 void ForceStartMinigameCommand::execute(CommandOrigin const& origin, CommandOutput& outp) {
@@ -19,7 +29,9 @@ void ForceStartMinigameCommand::execute(CommandOrigin const& origin, CommandOutp
     if (!minigame)
         return;
     minigame->broadcast("The game was started forcibly");
-    if (minigame->getCountdown() != -1)
+    if (time != -1)
+        minigame->startCountdown(time * 20);
+    else if (minigame->getCountdown() != -1)
         minigame->startCountdown(Minigame::TICKS_FULL_PLAYERS_COUNTDOWN);
     else
         minigame->startCountdown();

@@ -6,6 +6,7 @@ class ForceStartMinigameCommand : public Command {
 
 public:
     std::string minigame;
+    int time = -1;
 
     ~ForceStartMinigameCommand() override = default;
 
