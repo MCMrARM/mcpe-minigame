@@ -31,6 +31,8 @@ protected:
 
     void destroy();
 
+    void broadcastCountdown();
+
 public:
     static const int TICKS_INITIAL_COUNTDOWN = 20 * 60;
     static const int TICKS_ENOUGH_PLAYERS_COUNTDOWN = 20 * 15;
@@ -45,7 +47,7 @@ public:
 
     void start();
 
-    void startCountdown(int countdown = TICKS_INITIAL_COUNTDOWN) { this->countdown = countdown; }
+    void startCountdown(int countdown = TICKS_INITIAL_COUNTDOWN);
     int getCountdown() const { return countdown; }
 
     virtual void onStarted();

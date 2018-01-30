@@ -35,12 +35,7 @@ void Minigame::tick() {
         if (((countdown % 200) == 0 || // every 10 seconds
                 (countdown <= 100 && (countdown % 20) == 0)) && // every second in the last 5 seconds
                 countdown > 0) {
-            /*std::stringstream ss;
-            ss << "Game starting in " << (countdown / 20) << " seconds";
-            broadcast(ss.str());*/
-            char buf[4096];
-            snprintf(buf, sizeof(buf), "§6Game starting in §l%i seconds", countdown / 20);
-            broadcast(buf);
+            broadcastCountdown();
         }
         if (countdown == 0) {
             broadcast("§e§lThe game has started!");
@@ -114,11 +109,11 @@ bool Minigame::addPlayer(Player* player) {
     player->getMutableAttribute(Player::SATURATION)->resetToMaxValue();
 
     if (players.size() >= mapConfig.minPlayers && (countdown == -1 || countdown > TICKS_INITIAL_COUNTDOWN))
-        countdown = TICKS_INITIAL_COUNTDOWN;
+        startCountdown(TICKS_INITIAL_COUNTDOWN);
     if (players.size() >= mapConfig.tryGetMinPlayers && (countdown == -1 || countdown > TICKS_ENOUGH_PLAYERS_COUNTDOWN))
-        countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
+        startCountdown(TICKS_ENOUGH_PLAYERS_COUNTDOWN);
     if (players.size() >= mapConfig.maxPlayers && (countdown == -1 || countdown > TICKS_FULL_PLAYERS_COUNTDOWN))
-        countdown = TICKS_FULL_PLAYERS_COUNTDOWN;
+        startCountdown(TICKS_FULL_PLAYERS_COUNTDOWN);
     return true;
 }
 
@@ -131,10 +126,10 @@ void Minigame::removePlayer(Player* player) {
     players.erase(std::remove(players.begin(), players.end(), player), players.end());
     if (!started) {
         if (players.size() == mapConfig.maxPlayers - 1 && countdown != -1 && countdown < TICKS_FULL_PLAYERS_COUNTDOWN)
-            countdown = TICKS_ENOUGH_PLAYERS_COUNTDOWN;
+            startCountdown(TICKS_ENOUGH_PLAYERS_COUNTDOWN);
         if (players.size() == mapConfig.tryGetMinPlayers - 1 && countdown != -1 &&
             countdown < TICKS_ENOUGH_PLAYERS_COUNTDOWN)
-            countdown = TICKS_INITIAL_COUNTDOWN;
+            startCountdown(TICKS_INITIAL_COUNTDOWN);
         if (players.size() < mapConfig.minPlayers && countdown != -1)
             countdown = -1;
     } else {
@@ -151,6 +146,22 @@ bool Minigame::checkWinner() {
         return true;
     }
     return false;
+}
+
+void Minigame::startCountdown(int countdown) {
+    this->countdown = countdown;
+    broadcastCountdown();
+}
+
+void Minigame::broadcastCountdown() {
+    /*
+    std::stringstream ss;
+    ss << "Game starting in " << (countdown / 20) << " seconds";
+    broadcast(ss.str());
+     */
+    char buf[4096];
+    snprintf(buf, sizeof(buf), "§6Game starting in §l%i seconds", countdown / 20);
+    broadcast(buf);
 }
 
 void Minigame::broadcast(Packet const& packet) {
